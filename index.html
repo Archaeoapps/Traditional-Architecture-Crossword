@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="el">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Σταυρόλεξο Παραδοσιακής Κυπριακής Αρχιτεκτονικής</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app" id="app">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Δραστηριότητα για δύο ομάδες</p>
+        <h1>Σταυρόλεξο Παραδοσιακής Κυπριακής Αρχιτεκτονικής</h1>
+        <p class="intro">Οι ομάδες επιλέγουν εναλλάξ αριθμό και κατεύθυνση. Σωστή απάντηση: 1 βαθμός. Σε λανθασμένη απάντηση, η άλλη ομάδα έχει μία προσπάθεια για κλοπή.</p>
+      </div>
+    </header>
+
+    <section class="scoreboard" aria-label="Βαθμολογία ομάδων">
+      <div class="team-card active" id="teamCard0">
+        <label for="teamName0">Ομάδα 1</label>
+        <input id="teamName0" class="team-name" value="Ομάδα Α" maxlength="30" aria-label="Όνομα πρώτης ομάδας">
+        <div class="score"><span id="score0">0</span><small>βαθμοί</small></div>
+      </div>
+      <div class="turn-card">
+        <span class="turn-label">Σειρά</span>
+        <strong id="turnText">Ομάδα Α</strong>
+        <span class="mode-badge" id="modeBadge">Κανονική προσπάθεια</span>
+        <div class="timer-row">
+          <span class="timer" id="timer" aria-live="polite">10″</span>
+          <button type="button" class="secondary small" id="timerBtn">Έναρξη 10″</button>
+        </div>
+      </div>
+      <div class="team-card" id="teamCard1">
+        <label for="teamName1">Ομάδα 2</label>
+        <input id="teamName1" class="team-name" value="Ομάδα Β" maxlength="30" aria-label="Όνομα δεύτερης ομάδας">
+        <div class="score"><span id="score1">0</span><small>βαθμοί</small></div>
+      </div>
+    </section>
+
+    <section class="game-layout">
+      <div class="board-panel">
+        <div class="board-toolbar">
+          <div>
+            <span class="toolbar-label">Επιλεγμένη λέξη</span>
+            <strong id="selectedLabel">Επιλέξτε μια υπόδειξη</strong>
+          </div>
+          <span id="progressText">0 / 11 λυμένες</span>
+        </div>
+        <div class="grid-wrap">
+          <div id="crossword" class="crossword" role="grid" aria-label="Πλέγμα σταυρολέξου"></div>
+        </div>
+        <div class="controls">
+          <button type="button" class="primary" id="checkBtn" disabled>Έλεγχος απάντησης</button>
+          <button type="button" class="secondary" id="passBtn" disabled>Παράδοση → Κλοπή</button>
+          <button type="button" class="secondary" id="revealBtn" disabled>Εμφάνιση λύσης (0 β.)</button>
+          <button type="button" class="danger" id="resetBtn">Νέο παιχνίδι</button>
+        </div>
+        <div id="message" class="message info" aria-live="polite">Επιλέξτε μία υπόδειξη για να ξεκινήσετε.</div>
+      </div>
+
+      <aside class="clues-panel">
+        <section>
+          <h2>Οριζόντια</h2>
+          <div id="acrossClues" class="clues"></div>
+        </section>
+        <section>
+          <h2>Κάθετα</h2>
+          <div id="downClues" class="clues"></div>
+        </section>
+      </aside>
+    </section>
+
+    <footer>
+      <p><strong>Χειρισμός:</strong> επιλέξτε υπόδειξη, γράψτε τη λέξη στο πλέγμα και πατήστε «Έλεγχος απάντησης». Τα σωστά γράμματα που διασταυρώνονται με ήδη λυμένες λέξεις παραμένουν κλειδωμένα.</p>
+      <p id="finalResult" class="final-result" hidden></p>
+    </footer>
+  </main>
+
+  <script src="app-core.js"></script>
+  <script src="app-render.js"></script>
+  <script src="app-game.js"></script>
+  <script src="app-init.js"></script>
+</body>
+</html>
