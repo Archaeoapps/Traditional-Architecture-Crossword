@@ -1,0 +1,9 @@
+let data=[],current=null,scores={A:0,B:0};
+const $=s=>document.querySelector(s);
+async function load(){const t=await fetch('content.txt').then(r=>r.text());data=parse(t);render();}
+function parse(t){return t.split(/\n\s*---\s*\n/).map(b=>{let o={};b.split('\n').forEach(l=>{if(!l.trim()||l.trim().startsWith('#'))return;let i=l.indexOf(':');if(i>0)o[l.slice(0,i).trim().toLowerCase()]=l.slice(i+1).trim()});return o}).filter(o=>o.category&&o.question&&o.answer)}
+function render(){const cats=[...new Set(data.map(x=>x.category))];const values=[...new Set(data.map(x=>+x.points))].sort((a,b)=>a-b);let b=$('#board');b.style.setProperty('--cols',cats.length);let h='<div class="cat-row">'+cats.map(c=>'<div class="cat">'+c+'</div>').join('')+'</div>';h+=values.map(v=>'<div class="q-row">'+cats.map(c=>{let i=data.findIndex(x=>x.category===c&&+x.points===v);return i<0?'<span></span>':'<button class="tile" data-i="'+i+'">'+v+'</button>'}).join('')+'</div>').join('');b.innerHTML=h;b.querySelectorAll('.tile').forEach(x=>x.onclick=()=>openQ(+x.dataset.i,x))}
+function openQ(i,el){current={i,el};let q=data[i];$('#meta').textContent=q.category+' · '+q.points+' βαθμοί';$('#question').textContent=q.question;$('#answer').textContent='Απάντηση: '+q.answer;$('#answer').hidden=true;$('#modal').classList.remove('hidden')}
+$('#show').onclick=()=>$('#answer').hidden=false;$('#close').onclick=finish;document.querySelectorAll('[data-award]').forEach(b=>b.onclick=()=>{let t=b.dataset.award;scores[t]+=+data[current.i].points;$('#score'+t).textContent=scores[t];finish()});
+function finish(){if(current)current.el.classList.add('used');$('#modal').classList.add('hidden');current=null}
+$('#reset').onclick=()=>{if(confirm('Να μηδενιστούν βαθμοί και ερωτήσεις;')){scores={A:0,B:0};$('#scoreA').textContent=0;$('#scoreB').textContent=0;render()}};load();
