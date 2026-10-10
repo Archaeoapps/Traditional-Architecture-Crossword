@@ -1,6 +1,80 @@
-<!doctype html><html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Έσπασεν η κούζα</title><link rel="stylesheet" href="../shared.css"><style>
-.game{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:18px}.word{font-size:clamp(2.2rem,6vw,5rem);letter-spacing:.18em;text-align:center;padding:45px 12px}.hint{padding:18px;font-size:1.3rem}.keyboard{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-top:14px}.key{padding:13px 5px;background:var(--paper);border:1px solid var(--line);border-radius:8px;font-size:1.35rem;cursor:pointer}.key:disabled{opacity:.35}.kuza-wrap{display:grid;place-items:center;min-height:420px}.kuza{width:210px;height:300px;position:relative;background:linear-gradient(90deg,#a8462e,#d67d4d 22%,#e89a60 50%,#ca6d43 78%,#9f3f2a);border-radius:42% 42% 35% 35% / 18% 18% 56% 56%;border:8px solid #713421;box-shadow:inset 0 0 0 8px #e2a06f}.kuza:before{content:"";position:absolute;width:125px;height:45px;left:35px;top:-34px;background:#c66c40;border:8px solid #713421;border-radius:50%}.kuza:after{content:"◆  ◆  ◆\A ◇  ◇  ◇\A ◆  ◆  ◆";white-space:pre;position:absolute;inset:70px 20px;text-align:center;font-size:34px;line-height:2;color:#253f45;opacity:.8}.crack{position:absolute;background:#fff3df;width:6px;transform-origin:top;display:none;z-index:3}.c1{height:130px;left:55%;top:10px;transform:rotate(14deg)}.c2{height:120px;left:63%;top:105px;transform:rotate(-25deg)}.c3{height:95px;left:45%;top:170px;transform:rotate(35deg)}.c4{height:70px;left:34%;top:88px;transform:rotate(-38deg)}.c5{height:85px;left:72%;top:180px;transform:rotate(22deg)}.c6{height:75px;left:27%;top:205px;transform:rotate(-18deg)}.status{text-align:center;font-weight:700;font-size:1.2rem}.controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}@media(max-width:850px){.game{grid-template-columns:1fr}.kuza-wrap{min-height:330px}.keyboard{grid-template-columns:repeat(6,1fr)}}
-</style></head><body><header class="topbar"><h1>Έσπασεν η κούζα</h1><p class="subtitle">Μάντεψε τη λέξη πριν σπάσει η κούζα</p><a class="home-link" href="../">Παιχνίδια</a></header><main class="shell">
-<div class="team-strip"><div class="team panel"><b>Ομάδα Α</b><span id="scoreA" class="score">0</span></div><div class="team b panel"><b>Ομάδα Β</b><span id="scoreB" class="score">0</span></div></div>
-<div class="game"><section><div id="word" class="word panel"></div><div class="hint panel"><b>Υπόδειξη:</b> <span id="hint"></span><br><small id="category"></small></div><div id="keyboard" class="keyboard"></div><div class="controls"><button id="awardA" class="btn alt">+10 Ομάδα Α</button><button id="awardB" class="btn warn">+10 Ομάδα Β</button><button id="next" class="btn">Επόμενο</button><button id="reset" class="btn light">Νέο παιχνίδι</button></div></section>
-<aside class="panel kuza-wrap"><div><div class="kuza"><i class="crack c1"></i><i class="crack c2"></i><i class="crack c3"></i><i class="crack c4"></i><i class="crack c5"></i><i class="crack c6"></i></div><p id="status" class="status">Η κούζα είναι άθικτη.</p></div></aside></div></main><script src="game.js"></script></body></html>
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Έσπασεν η κούζα · Cyprus Folk Arts & Culture</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+.kouza-shell{max-width:1500px}
+.kouza-layout{display:grid;grid-template-columns:220px minmax(0,1fr) 350px;gap:18px;align-items:stretch}
+.score-rail{display:grid;gap:14px;align-content:start}.score-card{padding:18px;border-left:7px solid var(--navy)}.score-card.b{border-color:var(--terracotta)}.score-card small{display:block;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-size:.68rem}.score-card strong{font-size:1.18rem}.score-card .big-score{display:block;font-size:3rem;color:var(--navy);margin-top:6px}
+.game-stage{padding:18px;display:flex;flex-direction:column}
+.stage-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}.stage-head h2{margin:0;color:var(--navy)}
+.word-frame{
+  min-height:190px;padding:28px 20px;display:grid;place-items:center;text-align:center;position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#fffaf0,#f5e8d0);border:8px solid #996b3d;border-radius:16px;
+  box-shadow:inset 0 0 0 3px #d5a86d,var(--shadow-soft)
+}
+.word-frame:before,.word-frame:after{content:"✣";position:absolute;color:var(--terracotta);opacity:.7;font-size:1.2rem}.word-frame:before{top:12px;left:14px}.word-frame:after{right:14px;bottom:12px}
+.word{font-size:clamp(2.3rem,5.2vw,5rem);font-weight:700;letter-spacing:.19em;color:var(--navy);line-height:1.35}
+.hint{margin-top:13px;padding:16px 18px;display:grid;grid-template-columns:auto 1fr;gap:13px;align-items:center}
+.hint-icon{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--terracotta);color:white;font-size:1.4rem}
+.hint b{display:block;margin-bottom:3px}.hint small{display:block;color:var(--muted);margin-top:4px}
+.keyboard{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin-top:14px}
+.key{min-height:54px;padding:10px 5px;background:linear-gradient(180deg,#fffaf0,#efe3ce);border:1px solid var(--line);border-radius:10px;font-size:1.28rem;font-weight:700;color:var(--navy);cursor:pointer;box-shadow:0 3px 7px #4d391d10;transition:.12s transform,.12s background}
+.key:hover:not(:disabled){transform:translateY(-2px);background:white}.key:disabled{opacity:.32;background:#ded8cb;cursor:not-allowed}
+.controls{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:15px}
+.kuza-panel{padding:22px 18px;display:grid;place-items:center;text-align:center;overflow:hidden;position:relative}
+.kuza-panel:before{content:"";position:absolute;inset:auto -40px -52px -40px;height:140px;background:linear-gradient(#d8c09b,#c6aa80);clip-path:polygon(0 35%,100% 0,100% 100%,0 100%);opacity:.55}
+.kuza-scene{position:relative;z-index:1}.kuza-title{margin:0 0 34px;color:var(--navy);font-size:1.2rem}
+.kuza{width:220px;height:315px;position:relative;margin:auto;background:linear-gradient(90deg,#9f4029,#cf7144 22%,#e09358 49%,#c6633d 78%,#923724);border-radius:43% 43% 34% 34% / 17% 17% 56% 56%;border:8px solid #713421;box-shadow:inset 0 0 0 7px #e5a06c,0 16px 24px #55341f26}
+.kuza:before{content:"";position:absolute;width:132px;height:48px;left:36px;top:-35px;background:#c86a3e;border:8px solid #713421;border-radius:50%;box-shadow:inset 0 0 0 5px #df8e59}
+.kuza:after{content:"◆  ◇  ◆\A ━━━━━\A ❖  ❖  ❖\A ━━━━━\A ◇  ◆  ◇";white-space:pre;position:absolute;inset:64px 20px 26px;text-align:center;font-size:28px;line-height:1.7;color:#24444b;opacity:.78}
+.kuza-handle{position:absolute;top:44px;width:58px;height:104px;border:12px solid #713421;border-radius:50%;z-index:-1}.kuza-handle.left{left:-47px}.kuza-handle.right{right:-47px}
+.crack{position:absolute;background:#fff3df;width:6px;transform-origin:top;display:none;z-index:4;box-shadow:0 0 0 1px #7c3625}.c1{height:125px;left:57%;top:7px;transform:rotate(14deg)}.c2{height:118px;left:64%;top:100px;transform:rotate(-26deg)}.c3{height:94px;left:47%;top:173px;transform:rotate(34deg)}.c4{height:72px;left:34%;top:88px;transform:rotate(-38deg)}.c5{height:82px;left:73%;top:188px;transform:rotate(22deg)}.c6{height:73px;left:28%;top:210px;transform:rotate(-18deg)}
+.status{position:relative;z-index:1;margin:34px 0 0;font-weight:700;font-size:1.08rem;color:var(--navy);background:#fff8e9;border:1px solid var(--line);border-radius:999px;padding:9px 13px}
+.mistakes{position:relative;z-index:1;margin-top:10px;color:var(--muted);font-size:.86rem}
+@media(max-width:1100px){.kouza-layout{grid-template-columns:180px minmax(0,1fr)}.kuza-panel{grid-column:1/-1}.score-rail{grid-row:1}.game-stage{grid-column:2}.kuza-panel{min-height:440px}}
+@media(max-width:760px){.kouza-layout{grid-template-columns:1fr}.score-rail{grid-template-columns:1fr 1fr}.game-stage,.kuza-panel{grid-column:1}.keyboard{grid-template-columns:repeat(6,1fr)}.word-frame{min-height:145px}.kuza-panel{min-height:420px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <p class="era">18ος–20ός αιώνας · Παραδοσιακή Κύπρος</p>
+  <h1>Έσπασεν η κούζα</h1>
+  <p class="subtitle">Μάντεψε τη λέξη πριν σπάσει η κούζα</p>
+  <a class="home-link" href="../">⌂ Παιχνίδια</a>
+</header>
+<main class="shell kouza-shell">
+  <div class="kouza-layout">
+    <aside class="score-rail">
+      <section class="score-card panel"><small>Μπλε ομάδα</small><strong>Ομάδα Α</strong><span id="scoreA" class="big-score">0</span></section>
+      <section class="score-card b panel"><small>Κεραμιδί ομάδα</small><strong>Ομάδα Β</strong><span id="scoreB" class="big-score">0</span></section>
+    </aside>
+    <section class="game-stage panel">
+      <div class="stage-head"><div><span class="section-label">Κρυφή λέξη</span><h2>Ποια είναι;</h2></div><span class="badge">6 λάθη = σπάσιμο</span></div>
+      <div class="word-frame"><div id="word" class="word"></div></div>
+      <div class="hint panel"><span class="hint-icon">✦</span><div><b>Υπόδειξη</b><span id="hint"></span><small id="category"></small></div></div>
+      <div id="keyboard" class="keyboard" aria-label="Ελληνικό πληκτρολόγιο"></div>
+      <div class="controls">
+        <button id="awardA" class="btn alt">+10 Ομάδα Α</button>
+        <button id="awardB" class="btn warn">+10 Ομάδα Β</button>
+        <button id="next" class="btn">Επόμενη λέξη →</button>
+        <button id="reset" class="btn light">↻ Νέο παιχνίδι</button>
+      </div>
+    </section>
+    <aside class="kuza-panel panel">
+      <div class="kuza-scene">
+        <p class="kuza-title">Πρόσεχε την κούζα!</p>
+        <div class="kuza">
+          <i class="kuza-handle left"></i><i class="kuza-handle right"></i>
+          <i class="crack c1"></i><i class="crack c2"></i><i class="crack c3"></i><i class="crack c4"></i><i class="crack c5"></i><i class="crack c6"></i>
+        </div>
+        <p id="status" class="status">Η κούζα είναι άθικτη.</p>
+        <p class="mistakes">Κάθε λανθασμένο γράμμα προσθέτει μια ρωγμή.</p>
+      </div>
+    </aside>
+  </div>
+</main>
+<script src="game.js"></script>
+</body></html>
