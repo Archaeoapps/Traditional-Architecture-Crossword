@@ -1,0 +1,11 @@
+const GREEK=[...'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ'];let words=[],idx=0,wrong=0,guessed=new Set(),scores={A:0,B:0};
+const $=s=>document.querySelector(s),norm=s=>s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+async function load(){words=parse(await fetch('content.txt').then(r=>r.text()));newRound()}
+function parse(t){return t.split(/\n\s*---\s*\n/).map(b=>{let o={};b.split('\n').forEach(l=>{if(!l.trim()||l.trim().startsWith('#'))return;let i=l.indexOf(':');if(i>0)o[l.slice(0,i).trim().toLowerCase()]=l.slice(i+1).trim()});return o}).filter(x=>x.word)}
+function newRound(){wrong=0;guessed.clear();let w=words[idx%words.length];$('#hint').textContent=w.hint||'';$('#category').textContent=w.category?'Κατηγορία: '+w.category:'';renderWord();renderKeys();renderKuza()}
+function renderWord(){let w=norm(words[idx%words.length].word);$('#word').textContent=[...w].map(c=>/[Α-Ω]/.test(c)?(guessed.has(c)?c:'_'):c).join(' ');if([...w].filter(c=>/[Α-Ω]/.test(c)).every(c=>guessed.has(c))){$('#status').textContent='Το βρήκατε! Η κούζα σώθηκε.';disableKeys()}}
+function renderKeys(){let k=$('#keyboard');k.innerHTML=GREEK.map(c=>'<button class="key">'+c+'</button>').join('');k.querySelectorAll('button').forEach(b=>b.onclick=()=>guess(b.textContent,b))}
+function guess(c,b){b.disabled=true;guessed.add(c);let w=norm(words[idx%words.length].word);if(!w.includes(c)){wrong=Math.min(6,wrong+1);renderKuza()}renderWord()}
+function renderKuza(){document.querySelectorAll('.crack').forEach((e,i)=>e.style.display=i<wrong?'block':'none');$('#status').textContent=wrong>=6?'Έσπασεν η κούζα! Η λέξη ήταν: '+words[idx%words.length].word:(wrong?'Ρωγμές: '+wrong+'/6':'Η κούζα είναι άθικτη.');if(wrong>=6)disableKeys()}
+function disableKeys(){document.querySelectorAll('.key').forEach(b=>b.disabled=true)}
+['A','B'].forEach(t=>$('#award'+t).onclick=()=>{scores[t]+=10;$('#score'+t).textContent=scores[t]});$('#next').onclick=()=>{idx=(idx+1)%words.length;newRound()};$('#reset').onclick=()=>{idx=0;scores={A:0,B:0};$('#scoreA').textContent=0;$('#scoreB').textContent=0;newRound()};load();
