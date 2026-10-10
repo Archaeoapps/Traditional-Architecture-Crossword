@@ -1,6 +1,76 @@
-<!doctype html><html lang="el"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Millionaire Quiz</title><link rel="stylesheet" href="../shared.css"><style>
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 170px;gap:18px}.lifelines{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}.question{padding:28px;text-align:center;font-size:clamp(1.5rem,3vw,2.5rem)}.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}.answer{padding:18px;text-align:left;background:var(--paper);border:2px solid var(--line);border-radius:12px;cursor:pointer;font-size:1.15rem}.answer.selected{border-color:var(--gold);background:#fff0c7}.answer.correct{background:#dcebd7;border-color:var(--green)}.answer.wrong{background:#f3d0c9;border-color:var(--red)}.ladder{padding:10px;display:flex;flex-direction:column-reverse;gap:4px}.step{padding:8px;text-align:center;border-radius:7px}.step.active{background:var(--gold);font-weight:700}.controls{display:flex;gap:10px;justify-content:center;margin-top:15px;flex-wrap:wrap}@media(max-width:800px){.layout{grid-template-columns:1fr}.ladder{display:none}.answers{grid-template-columns:1fr}.lifelines{grid-template-columns:1fr}}
-</style></head><body><header class="topbar"><h1>Millionaire Quiz</h1><p class="subtitle">Cyprus Folk Arts & Culture</p><a class="home-link" href="../">Παιχνίδια</a></header><main class="shell">
-<div class="team-strip"><div class="team panel"><b>Ομάδα Α</b><span id="scoreA" class="score">0</span></div><div class="team b panel"><b>Ομάδα Β</b><span id="scoreB" class="score">0</span></div></div>
-<div class="layout"><section><div class="lifelines"><button class="btn warn" id="fifty">50:50</button><button class="btn alt" id="classBtn">Ρώτα την τάξη</button><button class="btn" id="hintBtn">Υπόδειξη</button></div><div class="panel question"><small id="counter"></small><div id="question"></div></div><div id="answers" class="answers"></div><div class="controls"><select id="team" class="btn light"><option value="A">Ομάδα Α</option><option value="B">Ομάδα Β</option></select><button id="lock" class="btn">Κλείδωμα απάντησης</button><button id="next" class="btn light">Επόμενη</button></div><p id="message" style="text-align:center;font-weight:bold"></p></section><aside id="ladder" class="ladder panel"></aside></div></main>
-<script src="game.js"></script></body></html>
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Millionaire Quiz · Cyprus Folk Arts & Culture</title>
+<link rel="stylesheet" href="../shared.css">
+<style>
+.million-shell{max-width:1500px}
+.million-layout{display:grid;grid-template-columns:210px minmax(0,1fr) 190px;gap:18px;align-items:start}
+.score-rail{display:grid;gap:14px;position:sticky;top:14px}.score-card{padding:18px;border-left:7px solid var(--navy)}.score-card.b{border-color:var(--terracotta)}.score-card small{display:block;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-size:.68rem}.score-card strong{font-size:1.18rem}.score-card .big-score{display:block;font-size:3rem;color:var(--navy);margin-top:6px}
+.center-stage{min-width:0}.lifelines{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:13px}.lifeline{min-height:78px;font-size:1.02rem;display:flex;gap:8px;align-items:center;justify-content:center}.life-icon{font-size:1.45rem}
+.question{
+  min-height:230px;padding:34px 38px;text-align:center;display:grid;place-items:center;position:relative;overflow:hidden
+}
+.question:before,.question:after{content:"";position:absolute;width:90px;height:90px;border:1px solid rgba(200,150,56,.25);border-radius:50%}.question:before{left:-38px;top:-36px}.question:after{right:-38px;bottom:-36px}
+#counter{display:block;text-transform:uppercase;letter-spacing:.14em;color:#8b744e;font-size:.75rem;margin-bottom:12px}
+#question{font-size:clamp(1.55rem,3vw,2.6rem);line-height:1.25;color:var(--navy);font-weight:700}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:13px}
+.answer{
+  min-height:92px;padding:16px 18px;text-align:left;background:linear-gradient(180deg,#fffaf0,#f4ead8);
+  border:1px solid var(--line);border-radius:15px;cursor:pointer;font-size:1.15rem;color:var(--ink);
+  display:flex;gap:12px;align-items:center;box-shadow:0 5px 12px #533a1d10;transition:.14s transform,.14s border-color,.14s background
+}
+.answer:hover:not(:disabled){transform:translateY(-2px);border-color:#b99b68;background:white}
+.answer b{
+  flex:0 0 42px;width:42px;height:42px;border-radius:10px;display:grid;place-items:center;color:white;background:var(--navy);font-size:1.25rem
+}
+.answer:nth-child(2) b{background:var(--terracotta)}.answer:nth-child(3) b{background:var(--olive)}.answer:nth-child(4) b{background:var(--gold)}
+.answer.selected{border:2px solid var(--gold);background:#fff0c7;box-shadow:0 0 0 4px rgba(200,150,56,.12)}
+.answer.correct{background:#dcebd7;border:2px solid var(--green)}.answer.wrong{background:#f3d0c9;border:2px solid var(--red)}
+.answer:disabled{cursor:default}
+.controls{display:flex;gap:10px;justify-content:center;margin-top:15px;flex-wrap:wrap}
+#team{min-width:150px}
+#message{min-height:48px;margin:14px 0 0;text-align:center;font-weight:700;padding:10px 14px;color:#5d523d}
+.ladder-panel{padding:13px 10px;position:sticky;top:14px}.ladder-head{text-align:center;margin:2px 0 10px}.ladder-head strong{display:block;color:var(--navy);font-size:1.15rem}.ladder-head small{color:var(--muted)}
+.ladder{display:flex;flex-direction:column-reverse;gap:5px}
+.step{padding:9px 8px;text-align:center;border-radius:9px;background:#f7efdf;border:1px solid #e2d6bf;font-weight:700;color:#435565}
+.step.active{background:linear-gradient(90deg,#d6a84e,#edc978);color:#423019;border-color:#c7902e;transform:scale(1.04);box-shadow:0 5px 12px #7e5e2920}
+@media(max-width:1050px){.million-layout{grid-template-columns:180px minmax(0,1fr)}.ladder-panel{display:none}}
+@media(max-width:760px){.million-layout{grid-template-columns:1fr}.score-rail{position:static;grid-template-columns:1fr 1fr}.answers{grid-template-columns:1fr}.lifelines{grid-template-columns:1fr}.question{min-height:190px;padding:24px 18px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <p class="era">18ος–20ός αιώνας · Cyprus Edition</p>
+  <h1>Millionaire Quiz</h1>
+  <p class="subtitle">Folk Arts & Culture</p>
+  <a class="home-link" href="../">⌂ Παιχνίδια</a>
+</header>
+<main class="shell million-shell">
+  <div class="million-layout">
+    <aside class="score-rail">
+      <section class="score-card panel"><small>Μπλε ομάδα</small><strong>Ομάδα Α</strong><span id="scoreA" class="big-score">0</span></section>
+      <section class="score-card b panel"><small>Κεραμιδί ομάδα</small><strong>Ομάδα Β</strong><span id="scoreB" class="big-score">0</span></section>
+      <section class="panel" style="padding:15px"><span class="section-label">Ενεργή ομάδα</span><p style="margin:.45rem 0 0;color:var(--muted);font-size:.9rem">Διάλεξε ομάδα πριν κλειδώσεις την απάντηση.</p></section>
+    </aside>
+    <section class="center-stage">
+      <div class="lifelines">
+        <button class="btn warn lifeline" id="fifty"><span class="life-icon">½</span>50:50</button>
+        <button class="btn alt lifeline" id="classBtn"><span class="life-icon">♟</span>Ρώτα την τάξη</button>
+        <button class="btn gold lifeline" id="hintBtn"><span class="life-icon">✦</span>Υπόδειξη</button>
+      </div>
+      <div class="panel question"><div><small id="counter"></small><div id="question"></div></div></div>
+      <div id="answers" class="answers"></div>
+      <div class="controls">
+        <select id="team" class="btn light"><option value="A">Ομάδα Α</option><option value="B">Ομάδα Β</option></select>
+        <button id="lock" class="btn">🔒 Κλείδωμα απάντησης</button>
+        <button id="next" class="btn light">Επόμενη →</button>
+      </div>
+      <p id="message"></p>
+    </section>
+    <aside class="ladder-panel panel"><div class="ladder-head"><small>Κλίμακα</small><strong>Βαθμοί</strong></div><div id="ladder" class="ladder"></div></aside>
+  </div>
+</main>
+<script src="game.js"></script>
+</body></html>
