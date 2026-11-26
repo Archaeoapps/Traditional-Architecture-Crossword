@@ -36,7 +36,7 @@ Optional:
 - `hint`: clue
 - `category`: topic label
 
-Greek accents are ignored when matching letters. Spaces and hyphens display automatically. Six wrong letters break the kuza.
+Greek accents are ignored when matching letters. Spaces and hyphens display automatically. Use Greek letters in `word`. Duplicate normalized words are removed. A new game shuffles the inventory once; each word is played at most once, even if the team fails. Teams alternate, receive 90 seconds after pressing Start, and earn 10 points for a solved word. Three wrong letters break the kouza. There is no stealing. When the inventory is exhausted, the game displays the final scores. The four transparent PNG stages are stored in `games/kouza/assets/`.
 
 Example:
 ```
