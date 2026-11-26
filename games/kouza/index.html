@@ -27,6 +27,7 @@
 .stage-head h2{margin:0;color:var(--navy)}
 .word-frame{min-height:180px;padding:24px 12px;display:grid;place-items:center;text-align:center;position:relative;background:linear-gradient(180deg,#fffaf0,#f5e8d0);border:7px solid #996b3d;border-radius:16px;box-shadow:inset 0 0 0 3px #d5a86d,var(--shadow-soft)}
 .word{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:7px;max-width:100%;font-size:clamp(1.3rem,3.8vw,3.8rem);font-weight:700;color:var(--navy);line-height:1.2}
+.word.waiting{font-size:clamp(1.05rem,2.2vw,1.8rem);color:var(--muted);font-weight:400}
 .word-group{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:5px}
 .letter{display:inline-grid;place-items:center;min-width:.83em;height:1.3em;border-bottom:3px solid var(--navy)}
 .letter.punct{border:0;min-width:.35em}
@@ -68,10 +69,10 @@
 <aside class="score-rail" aria-label="Βαθμολογία και χρόνος">
 <section id="cardA" class="score-card panel"><small>Μπλε ομάδα</small><strong>Ομάδα Α</strong><span id="scoreA" class="big-score">0</span></section>
 <section id="cardB" class="score-card b panel"><small>Κεραμιδί ομάδα</small><strong>Ομάδα Β</strong><span id="scoreB" class="big-score">0</span></section>
-<section class="turn-card panel"><span class="section-label">Σειρά</span><strong id="activeTeam">Ομάδα Α</strong><small id="roundCounter"></small><span class="section-label">Χρόνος</span><span id="timer" class="timer" role="timer">01:30</span><div class="time-track" aria-hidden="true"><span id="timeBar"></span></div><button id="start" class="btn alt" disabled>▶ Έναρξη 90″</button></section>
+<section class="turn-card panel"><span class="section-label">Σειρά</span><strong id="activeTeam">Ομάδα Α</strong><small id="roundCounter"></small><span class="section-label">Χρόνος</span><span id="timer" class="timer" role="timer">02:00</span><div class="time-track" aria-hidden="true"><span id="timeBar"></span></div><button id="start" class="btn alt" disabled>▶ Έναρξη 120″</button></section>
 </aside>
 <section class="game-stage panel">
-<div class="stage-head"><div><span class="section-label">Κρυφή λέξη</span><h2>Ποια είναι;</h2></div><span class="badge">3 λάθη = σπάσιμο</span></div>
+<div class="stage-head"><div><span class="section-label">Κρυφή λέξη</span><h2>Ποια είναι;</h2></div><div><span id="letterCount" aria-live="polite"></span> <span class="badge">3 λάθη = σπάσιμο</span></div></div>
 <div class="word-frame"><div id="word" class="word" aria-label="Κρυφή λέξη">Φόρτωση…</div></div>
 <div class="hint panel"><span class="hint-icon">✦</span><div><b>Υπόδειξη</b><span id="hint"></span><small id="category"></small></div></div>
 <div id="keyboard" class="keyboard" aria-label="Ελληνικό πληκτρολόγιο"></div>
@@ -86,5 +87,5 @@
 </aside>
 </div>
 </main>
-<script src="game.js?v=3"></script>
+<script src="game.js?v=4"></script>
 </body></html>

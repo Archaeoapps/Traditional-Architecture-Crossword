@@ -1,6 +1,6 @@
 'use strict';
 const LETTERS=[...'ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩ'];
-const MAX_ERRORS=3, ROUND_SECONDS=90, POINTS=10;
+const MAX_ERRORS=3, ROUND_SECONDS=120, POINTS=10;
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const norm=s=>s.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ');
 const greek=c=>LETTERS.includes(c);
@@ -48,7 +48,10 @@ function renderJar(){
   $$('#errors span').forEach((el,i)=>el.classList.toggle('used',i<wrong));
 }
 function renderWord(reveal=false){
-  const el=$('#word');el.replaceChildren();if(!current)return;
+  const el=$('#word');el.replaceChildren();el.classList.remove('waiting');if(!current)return;
+  if(phase==='ready'){
+    el.classList.add('waiting');el.textContent='Πατήστε «Έναρξη»';el.setAttribute('aria-label','Η λέξη θα εμφανιστεί με την έναρξη του χρόνου.');return;
+  }
   for(const part of current.normalized.split(' ')){
     const group=document.createElement('span');group.className='word-group';
     for(const c of part){
@@ -82,15 +85,19 @@ function nextRound(){
   if(round>=queue.length){complete();return}
   current=queue[round++];team=round%2===1?'A':'B';phase='ready';wrong=0;guessed=new Set();
   $('#roundCounter').textContent='Λέξη '+round+' / '+queue.length;
-  $('#hint').textContent=current.hint||'Δεν υπάρχει υπόδειξη.';
-  $('#category').textContent=current.category?'Κατηγορία: '+current.category:'';
+  $('#hint').textContent='Η υπόδειξη θα εμφανιστεί με την έναρξη του χρόνου.';
+  $('#category').textContent='';
+  $('#letterCount').textContent='';
   $('#status').textContent='Η κούζα είναι άθικτη. Πατήστε «Έναρξη».';
   renderScores();renderJar();renderWord();renderTime(ROUND_SECONDS);renderKeyboard();controls();
 }
 function startRound(){
   if(phase!=='ready')return;phase='playing';deadline=Date.now()+ROUND_SECONDS*1000;
   $('#status').textContent='Μάντεψε τη λέξη!';
-  renderKeyboard();controls();tick();interval=setInterval(tick,100);
+  $('#hint').textContent=current.hint||'Δεν υπάρχει υπόδειξη.';
+  $('#category').textContent=current.category?'Κατηγορία: '+current.category:'';
+  $('#letterCount').textContent='Γράμματα: '+[...current.normalized].filter(greek).length;
+  renderWord();renderKeyboard();controls();tick();interval=setInterval(tick,100);
 }
 function guess(letter){
   if(phase!=='playing'||!greek(letter)||guessed.has(letter))return;
@@ -116,7 +123,7 @@ function endRound(reason){
 function complete(){
   clearTimer();phase='complete';current=null;
   $('#word').textContent='ΤΕΛΟΣ';$('#word').setAttribute('aria-label','Τέλος παιχνιδιού');
-  $('#hint').textContent='Όλες οι λέξεις χρησιμοποιήθηκαν.';$('#category').textContent='';
+  $('#hint').textContent='Όλες οι λέξεις χρησιμοποιήθηκαν.';$('#category').textContent='';$('#letterCount').textContent='';
   $('#roundCounter').textContent=queue.length+' / '+queue.length+' λέξεις';
   const winner=scores.A===scores.B?'Ισοπαλία!':'Νικήτρια: Ομάδα '+(scores.A>scores.B?'Α':'Β')+'!';
   $('#status').textContent=winner+' Τελικό σκορ: '+scores.A+' – '+scores.B+'.';
